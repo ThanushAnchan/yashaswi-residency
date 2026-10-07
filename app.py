@@ -468,6 +468,18 @@ def api_admin_room_status(room_id):
     return jsonify({"success": True, "message": f"Room status updated to {status}."})
 
 
+@app.route("/static/<path:filename>")
+def serve_static_direct(filename):
+    for folder in [
+        os.path.join(base_dir, "public", "static"),
+        os.path.join(base_dir, "static")
+    ]:
+        filepath = os.path.join(folder, filename)
+        if os.path.exists(filepath):
+            return send_from_directory(folder, filename)
+    return jsonify({"error": f"Asset {filename} not found."}), 404
+
+
 @app.route("/uploads/<path:filename>")
 @app.route("/static/images/uploads/<path:filename>")
 def serve_upload(filename):
