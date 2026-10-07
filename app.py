@@ -14,8 +14,31 @@ import database
 
 logger = logging.getLogger("yashaswi_residency")
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
+base_dir = os.path.dirname(os.path.abspath(__file__))
+app = Flask(
+    __name__,
+    static_folder=os.path.join(base_dir, "static"),
+    template_folder=os.path.join(base_dir, "templates")
+)
 app.secret_key = os.environ.get("SECRET_KEY", "yashaswi-residency-manipal-secret-key-2026")
+
+class VercelPathNormalizer:
+    """Normalizes PATH_INFO when deployed via Vercel Serverless Function rewrites."""
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        for prefix in ["/api/index.py", "/api/index", "/api/app.py", "/api/app"]:
+            if path == prefix:
+                environ["PATH_INFO"] = "/"
+                break
+            elif path.startswith(prefix + "/"):
+                environ["PATH_INFO"] = path[len(prefix):]
+                break
+        return self.wsgi_app(environ, start_response)
+
+app.wsgi_app = VercelPathNormalizer(app.wsgi_app)
 
 # Vercel and Serverless environment detection
 IS_VERCEL = bool(
@@ -65,6 +88,10 @@ def admin_required(f):
 # --- Public Web Pages ---
 
 @app.route("/")
+@app.route("/api/index.py")
+@app.route("/api/index")
+@app.route("/api/app.py")
+@app.route("/api/app")
 def index():
     settings = database.get_settings()
     rooms = database.get_all_rooms(include_all_statuses=True)
@@ -79,6 +106,8 @@ def index():
 
 
 @app.route("/admin/login")
+@app.route("/api/index.py/admin/login")
+@app.route("/api/index/admin/login")
 def admin_login_page():
     if session.get("is_admin"):
         return redirect(url_for("admin_dashboard_page"))
@@ -88,6 +117,10 @@ def admin_login_page():
 
 @app.route("/admin")
 @app.route("/admin/dashboard")
+@app.route("/api/index.py/admin")
+@app.route("/api/index/admin")
+@app.route("/api/index.py/admin/dashboard")
+@app.route("/api/index/admin/dashboard")
 @admin_required
 def admin_dashboard_page():
     settings = database.get_settings()
@@ -483,6 +516,26 @@ def api_admin_settings():
         data["admin_password_hash"] = database.hash_password(data.pop("admin_password"))
     database.update_settings(data)
     return jsonify({"success": True, "message": "Settings updated successfully."})
+
+
+@app.errorhandler(404)
+def handle_404(e):
+    path = request.path
+    for prefix in ["/api/index.py", "/api/index", "/api/app.py", "/api/app"]:
+        if path.startswith(prefix):
+            clean_path = path[len(prefix):] or "/"
+            return redirect(clean_path)
+    # If standard 404 or unknown sub-route, serve the full homepage gracefully
+    settings = database.get_settings()
+    rooms = database.get_all_rooms(include_all_statuses=True)
+    reviews = database.get_approved_reviews()
+    return render_template(
+        "index.html",
+        settings=settings,
+        rooms=rooms,
+        reviews=reviews,
+        today=date.today().isoformat()
+    )
 
 
 if __name__ == "__main__":
