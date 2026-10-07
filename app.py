@@ -3,6 +3,7 @@ import secrets
 import json
 import logging
 import tempfile
+import urllib.parse
 from datetime import datetime, date
 from functools import wraps
 from flask import (
@@ -28,6 +29,18 @@ class VercelPathNormalizer:
         self.wsgi_app = wsgi_app
 
     def __call__(self, environ, start_response):
+        query = environ.get("QUERY_STRING", "")
+        if "path=" in query:
+            qs = urllib.parse.parse_qs(query)
+            if "path" in qs and qs["path"]:
+                raw_path = qs["path"][0]
+                if not raw_path.startswith("/"):
+                    raw_path = "/" + raw_path
+                clean_path = raw_path.split("?")[0]
+                if clean_path:
+                    environ["PATH_INFO"] = clean_path
+                    return self.wsgi_app(environ, start_response)
+
         path = environ.get("PATH_INFO", "")
         for prefix in ["/api/index.py", "/api/index", "/api/app.py", "/api/app"]:
             if path == prefix:
