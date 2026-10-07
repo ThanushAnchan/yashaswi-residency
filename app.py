@@ -105,7 +105,17 @@ def index():
     )
 
 
+@app.before_request
+def check_admin_domain():
+    host = request.host.lower()
+    if ("admin" in host or "owner" in host) and request.path == "/":
+        return redirect(url_for("admin_dashboard_page"))
+
+
 @app.route("/admin/login")
+@app.route("/owner-portal")
+@app.route("/manage")
+@app.route("/owner/login")
 @app.route("/api/index.py/admin/login")
 @app.route("/api/index/admin/login")
 def admin_login_page():
@@ -117,6 +127,8 @@ def admin_login_page():
 
 @app.route("/admin")
 @app.route("/admin/dashboard")
+@app.route("/owner")
+@app.route("/owner/dashboard")
 @app.route("/api/index.py/admin")
 @app.route("/api/index/admin")
 @app.route("/api/index.py/admin/dashboard")
