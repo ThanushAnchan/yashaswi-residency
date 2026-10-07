@@ -39,27 +39,8 @@ A modern, luxury full-stack accommodation and booking platform designed specific
 
 2. **Standard Terminal Launch:**
    ```bash
-   py run_server.py
-   ```
-   - Public Website: `http://127.0.0.1:5000`
-   - Owner Admin Portal: `http://127.0.0.1:5000/admin/login`
 
 ---
 
-## 🔑 Default Owner Credentials
-- **Username:** `admin`
-- **Password:** `yashaswi2026!`
 
----
 
-## 🌐 Deploying to Vercel
-
-This repository is built for **100% Vercel compatibility**:
-1. Contains `vercel.json` configured with modern rewrites to `/api/index.py`.
-2. Zero filesystem write attempts at import time (safe `/tmp` upload handling).
-3. Dual database engine support: SQLite for local preview, PostgreSQL for persistent production storage via `DATABASE_URL`.
-
-**Steps to deploy:**
-1. Push this folder to your GitHub repository.
-2. In [Vercel](https://vercel.com), click **Add New Project** -> **Import Git Repository**.
-3. Click **Deploy**. Your site will be live at `https://your-project.vercel.app` with the admin portal at `https://your-project.vercel.app/admin`.
