@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard | Yashaswi Residency Home Stay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      background: #f1f5f9;
+      min-height: 100vh;
+    }
+    .admin-navbar {
+      background: var(--primary);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(15, 43, 72, 0.15);
+    }
+    .admin-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: #fff;
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .admin-content {
+      max-width: 1300px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .stat-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+    .stat-value {
+      font-size: 1.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: var(--font-heading);
+    }
+    .tabs-header {
+      display: flex;
+      gap: 1rem;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 2rem;
+    }
+    .tab-btn {
+      padding: 0.85rem 1.5rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      position: relative;
+      transition: color var(--transition-fast);
+    }
+    .tab-btn.active {
+      color: var(--primary);
+    }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
+    }
+    .panel-card {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    .table-responsive {
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    .admin-table th {
+      padding: 1rem;
+      background: #f8fafc;
+      color: var(--primary);
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    .admin-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-pending { background: #fef3c7; color: #b45309; }
+    .badge-confirmed { background: #dcfce7; color: #15803d; }
+    .badge-completed { background: #e0f2fe; color: #0369a1; }
+    .badge-cancelled { background: #fee2e2; color: #b91c1c; }
+    .badge-available { background: #dcfce7; color: #15803d; }
+    .badge-occupied { background: #fef3c7; color: #b45309; }
+    .badge-maintenance { background: #fee2e2; color: #b91c1c; }
+  </style>
+</head>
+<body>
+
+  <!-- Admin Navbar -->
+  <header class="admin-navbar">
+    <div class="admin-brand">
+      <div class="brand-symbol" style="width: 36px; height: 36px; font-size: 1.1rem;">Y</div>
+      <span>YASHASWI RESIDENCY • OWNER PORTAL</span>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1.25rem;">
+      <a href="/" target="_blank" class="btn btn-outline-white btn-sm">🌐 View Public Website</a>
+      <span style="font-size: 0.88rem; color: #94a3b8;">Logged in as: <strong>{{ admin_user }}</strong></span>
+      <a href="/api/admin/logout" class="btn btn-primary btn-sm" style="background: #ef4444; border-color: #ef4444; box-shadow: none;">Logout</a>
+    </div>
+  </header>
+
+  <main class="admin-content">
+    <!-- Top Statistics Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">Total Bookings</div>
+        <div class="stat-value">{{ metrics.bookings.total }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Pending Confirmation</div>
+        <div class="stat-value" style="color: #d97706;">{{ metrics.bookings.pending }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Confirmed Stays</div>
+        <div class="stat-value" style="color: #16a34a;">{{ metrics.bookings.confirmed }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Available Rooms</div>
+        <div class="stat-value" style="color: #0284c7;">{{ metrics.rooms.available }} / {{ metrics.rooms.total }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Confirmed Revenue</div>
+        <div class="stat-value" style="color: var(--wood);">₹{{ "%.0f"|format(metrics.bookings.revenue) }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Guest Reviews</div>
+        <div class="stat-value" style="color: #f59e0b;">{{ metrics.reviews.total }}</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs-header">
+      <button class="tab-btn active" data-tab="tab-bookings">📋 Guest Bookings</button>
+      <button class="tab-btn" data-tab="tab-rooms">🛏️ Rooms & Tariffs</button>
+      <button class="tab-btn" data-tab="tab-reviews">💬 Guest Reviews</button>
+      <button class="tab-btn" data-tab="tab-settings">⚙️ Property & Payment Settings</button>
+    </div>
+
+    <!-- TAB 1: BOOKINGS MANAGEMENT -->
+    <div class="tab-pane active" id="tab-bookings">
+      <div class="panel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <h3 style="color: var(--primary);">All Reservations</h3>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <input type="text" id="booking-search-input" class="form-control" style="width: 240px;" placeholder="Search name, phone, ID...">
+            <select id="booking-status-filter" class="form-control" style="width: 180px;">
+              <option value="ALL">All Statuses</option>
+              <option value="PENDING">Pending Only</option>
+              <option value="CONFIRMED">Confirmed Only</option>
+              <option value="COMPLETED">Completed Only</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Booking ID</th>
+                <th>Guest</th>
+                <th>Contact</th>
+                <th>Room</th>
+                <th>Dates</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bookings-table-body">
+              <tr>
+                <td colspan="8" style="text-align: center; color: var(--text-muted);">Loading bookings...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: ROOM MANAGEMENT -->
+    <div class="tab-pane" id="tab-rooms">
+      <div class="panel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <h3 style="color: var(--primary);">Manage Rooms & Rates</h3>
+          <button class="btn btn-primary btn-sm" id="btn-add-room">+ Add New Room</button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Room #</th>
+                <th>Image</th>
+                <th>Room Name</th>
+                <th>Category</th>
+                <th>Reference Price</th>
+                <th>Capacity</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rooms-table-body">
+              {% for room in rooms %}
+              <tr>
+                <td><strong>{{ room.room_number }}</strong></td>
+                <td>
+                  {% if room.photos and room.photos|length > 0 %}
+                  <img src="{{ room.photos[0] }}" style="width: 60px; height: 40px; object-fit: cover; border-radius: 6px;">
+                  {% else %}
+                  <span>No Photo</span>
+                  {% endif %}
+                </td>
+                <td><strong>{{ room.name }}</strong></td>
+                <td>{{ room.category }}</td>
+                <td style="color: var(--wood); font-weight: 700;">₹{{ "%.0f"|format(room.price_per_night) }}</td>
+                <td>{{ room.capacity }} Guests</td>
+                <td>
+                  <span class="badge badge-{{ room.status|lower }}">{{ room.status }}</span>
+                </td>
+                <td>
+                  <button class="btn btn-outline-dark btn-sm btn-edit-room" data-room-id="{{ room.room_id }}">Edit</button>
+                  <button class="btn btn-sm btn-status-room" data-room-id="{{ room.room_id }}" data-current-status="{{ room.status }}" style="margin-left: 0.3rem;">Toggle Status</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: PROPERTY & PAYMENT SETTINGS -->
+    <div class="tab-pane" id="tab-settings">
+      <div class="panel-card" style="max-width: 800px;">
+        <h3 style="color: var(--primary); margin-bottom: 1.5rem;">Property & Payment Settings</h3>
+
+        <div id="settings-alert" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem;"></div>
+
+        <form id="settings-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Official Phone</label>
+              <input type="text" id="set-phone" class="form-control" value="{{ settings.phone }}">
+            </div>
+            <div class="form-field">
+              <label class="form-label">WhatsApp Contact</label>
+              <input type="text" id="set-whatsapp" class="form-control" value="{{ settings.whatsapp }}">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Full Address</label>
+            <input type="text" id="set-address" class="form-control" value="{{ settings.address }}">
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Check-in Time</label>
+              <input type="text" id="set-checkin" class="form-control" value="{{ settings.check_in_time }}">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Check-out Time</label>
+              <input type="text" id="set-checkout" class="form-control" value="{{ settings.check_out_time }}">
+            </div>
+          </div>
+
+          <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.5rem 0;">
+          <h4 style="color: var(--primary);">Payment Configuration</h4>
+
+          <div class="form-field">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: 600; cursor: pointer;">
+              <input type="checkbox" id="set-upi-enabled" {% if settings.upi_enabled == '1' %}checked{% endif %}>
+              Enable UPI Advance Payment Instructions for Guests
+            </label>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Official UPI ID</label>
+              <input type="text" id="set-upi-id" class="form-control" value="{{ settings.upi_id }}" placeholder="8792128459@upi">
+            </div>
+            <div class="form-field">
+              <label class="form-label">UPI Payee Name</label>
+              <input type="text" id="set-upi-name" class="form-control" value="{{ settings.upi_payee_name }}">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Payment Instructions for Guests</label>
+            <textarea id="set-payment-instructions" class="form-control" rows="3">{{ settings.payment_instructions }}</textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 0.5rem;">
+            SAVE SETTINGS
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- TAB 4: GUEST REVIEWS & FEEDBACK -->
+    <div class="tab-pane" id="tab-reviews">
+      <div class="panel-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+          <h3 style="color: var(--primary);">Guest Feedback & Reviews</h3>
+
+          <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <select id="review-status-filter" class="form-control" style="width: 180px;">
+              <option value="ALL">All Statuses</option>
+              <option value="APPROVED">Approved Only</option>
+              <option value="PENDING">Pending Only</option>
+              <option value="HIDDEN">Hidden Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Guest</th>
+                <th>Rating</th>
+                <th>Comments & Feedback</th>
+                <th>Stay Details</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reviews-table-body">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted);">Loading reviews...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL: ADD / EDIT ROOM -->
+  <div class="modal-backdrop" id="modal-room-editor">
+    <div class="modal-box" style="max-width: 600px;">
+      <div class="modal-header">
+        <h3 id="room-editor-title">Add Room</h3>
+        <p>Yashaswi Residency Inventory</p>
+        <button class="modal-close-btn" id="room-editor-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="room-editor-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <input type="hidden" id="edit-room-id">
+          
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Room Number *</label>
+              <input type="text" id="edit-room-number" class="form-control" placeholder="YR-401" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Room Name *</label>
+              <input type="text" id="edit-room-name" class="form-control" placeholder="Deluxe Family Stay" required>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Category</label>
+              <select id="edit-room-category" class="form-control">
+                <option value="Comfortable">Comfortable</option>
+                <option value="Premium">Premium</option>
+                <option value="Family">Family</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Price / Night (₹) *</label>
+              <input type="number" id="edit-room-price" class="form-control" placeholder="2415" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Capacity (Guests)</label>
+              <input type="number" id="edit-room-capacity" class="form-control" value="2" min="1" max="10">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Bed Type</label>
+            <input type="text" id="edit-room-bed" class="form-control" value="King / Queen Bed">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Description</label>
+            <textarea id="edit-room-desc" class="form-control" rows="3" placeholder="Room features, atmosphere, cleanliness..."></textarea>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Amenities (Comma separated)</label>
+            <input type="text" id="edit-room-amenities" class="form-control" value="Air Conditioning, Free Wi-Fi, Smart TV, Hot Water">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Select Primary Photo</label>
+            <select id="edit-room-photo" class="form-control">
+              <option value="/static/images/honeymoon_romantic_suite.jpg">Honeymoon / Romantic Suite Setup</option>
+              <option value="/static/images/buddha_zen_sanctum.jpg">Buddha Zen Sanctum Courtyard</option>
+              <option value="/static/images/living_lounge.png">Living Area Lounge with TV</option>
+              <option value="/static/images/premium_wood_lounge.png">Premium Wood-Paneled Lounge</option>
+              <option value="/static/images/family_suite_lounge.png">Family Suite Large Lounge</option>
+              <option value="/static/images/lounge_kitchen_open.jpg">Open Living & Kitchenette Suite</option>
+              <option value="/static/images/dining_living_suite.jpg">Teak Table Living Suite</option>
+              <option value="/static/images/lounge_french_doors.jpg">Private Lounge with French Doors</option>
+              <option value="/static/images/entrance_reception.png">Entrance Porch & Reception</option>
+              <option value="/static/images/hero_exterior.jpg">Building Exterior Facade</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;" id="btn-save-room">
+            SAVE ROOM
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard JavaScript -->
+  <script>
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+      });
+    });
+
+    // Load Bookings
+    async function loadBookings() {
+      const search = document.getElementById('booking-search-input').value.trim();
+      const status = document.getElementById('booking-status-filter').value;
+      const tbody = document.getElementById('bookings-table-body');
+
+      let url = '/api/admin/bookings?';
+      if (search) url += `search=${encodeURIComponent(search)}&`;
+      if (status) url += `status=${encodeURIComponent(status)}&`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success && data.bookings) {
+          if (data.bookings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">No bookings found.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = data.bookings.map(b => {
+            const cleanPhone = b.phone.replace(/[^0-9]/g, '');
+            const waMsg = encodeURIComponent(`Hello ${b.guest_name}, this is Yashaswi Residency Home Stay regarding your reservation ${b.booking_id}.`);
+            return `
+              <tr>
+                <td><strong>${b.booking_id}</strong></td>
+                <td><strong>${b.guest_name}</strong><br><small style="color: #64748b;">${b.guests} Guests</small></td>
+                <td>${b.phone}<br><small style="color: #64748b;">${b.email}</small></td>
+                <td>${b.room_name}</td>
+                <td>${b.check_in} to ${b.check_out}</td>
+                <td style="color: var(--wood); font-weight: 700;">₹${b.total_amount}</td>
+                <td><span class="badge badge-${b.booking_status.toLowerCase()}">${b.booking_status}</span></td>
+                <td>
+                  <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                    ${b.booking_status === 'PENDING' ? `
+                      <button class="btn btn-sm btn-primary" onclick="updateBookingStatus('${b.booking_id}', 'CONFIRMED')" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;">Confirm</button>
+                    ` : ''}
+                    ${b.booking_status === 'CONFIRMED' ? `
+                      <button class="btn btn-sm" onclick="updateBookingStatus('${b.booking_id}', 'COMPLETED')" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: #0284c7; color: #fff;">Complete</button>
+                    ` : ''}
+                    ${b.booking_status !== 'CANCELLED' && b.booking_status !== 'COMPLETED' ? `
+                      <button class="btn btn-sm" onclick="updateBookingStatus('${b.booking_id}', 'CANCELLED')" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: #ef4444; color: #fff;">Cancel</button>
+                    ` : ''}
+                    <a href="https://wa.me/91${cleanPhone}?text=${waMsg}" target="_blank" class="btn btn-sm" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; background: #25d366; color: #fff;">WhatsApp</a>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Error loading bookings.</td></tr>';
+      }
+    }
+
+    async function updateBookingStatus(bookingId, newStatus) {
+      if (!confirm(`Mark booking ${bookingId} as ${newStatus}?`)) return;
+      try {
+        const res = await fetch(`/api/admin/bookings/${bookingId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadBookings();
+        } else {
+          alert(data.error || 'Update failed');
+        }
+      } catch (err) {
+        alert('Connection error');
+      }
+    }
+
+    document.getElementById('booking-search-input').addEventListener('input', loadBookings);
+    document.getElementById('booking-status-filter').addEventListener('change', loadBookings);
+    loadBookings();
+
+    // Toggle Room Status
+    document.querySelectorAll('.btn-status-room').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const roomId = btn.getAttribute('data-room-id');
+        const curr = btn.getAttribute('data-current-status');
+        const nextStatus = curr === 'AVAILABLE' ? 'OCCUPIED' : 'AVAILABLE';
+        try {
+          const res = await fetch(`/api/admin/rooms/${roomId}/status`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: nextStatus })
+          });
+          const data = await res.json();
+          if (data.success) {
+            window.location.reload();
+          }
+        } catch (err) {
+          alert('Failed to update room status');
+        }
+      });
+    });
+
+    // Add / Edit Room Modal
+    const roomEditorModal = document.getElementById('modal-room-editor');
+    const roomEditorClose = document.getElementById('room-editor-close');
+    const roomEditorForm = document.getElementById('room-editor-form');
+
+    document.getElementById('btn-add-room').addEventListener('click', () => {
+      document.getElementById('room-editor-title').textContent = 'Add New Room';
+      document.getElementById('edit-room-id').value = '';
+      roomEditorForm.reset();
+      roomEditorModal.classList.add('active');
+    });
+
+    roomEditorClose.addEventListener('click', () => {
+      roomEditorModal.classList.remove('active');
+    });
+
+    roomEditorForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const roomId = document.getElementById('edit-room-id').value;
+      const isEdit = Boolean(roomId);
+
+      const amenitiesList = document.getElementById('edit-room-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
+      const chosenPhoto = document.getElementById('edit-room-photo').value;
+
+      const payload = {
+        room_number: document.getElementById('edit-room-number').value.trim(),
+        name: document.getElementById('edit-room-name').value.trim(),
+        category: document.getElementById('edit-room-category').value,
+        price_per_night: parseFloat(document.getElementById('edit-room-price').value),
+        capacity: parseInt(document.getElementById('edit-room-capacity').value || '2'),
+        bed_type: document.getElementById('edit-room-bed').value.trim(),
+        description: document.getElementById('edit-room-desc').value.trim(),
+        amenities: amenitiesList,
+        photos: [chosenPhoto],
+        status: 'AVAILABLE'
+      };
+
+      const url = isEdit ? `/api/admin/rooms/${roomId}` : '/api/admin/rooms';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(isEdit ? 'Room updated successfully!' : 'Room created successfully!');
+          window.location.reload();
+        } else {
+          alert(data.error || 'Failed to save room.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    });
+
+    // Settings Form
+    document.getElementById('settings-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('settings-alert');
+      alertBox.style.display = 'none';
+
+      const payload = {
+        phone: document.getElementById('set-phone').value.trim(),
+        whatsapp: document.getElementById('set-whatsapp').value.trim(),
+        address: document.getElementById('set-address').value.trim(),
+        check_in_time: document.getElementById('set-checkin').value.trim(),
+        check_out_time: document.getElementById('set-checkout').value.trim(),
+        upi_enabled: document.getElementById('set-upi-enabled').checked ? '1' : '0',
+        upi_id: document.getElementById('set-upi-id').value.trim(),
+        upi_payee_name: document.getElementById('set-upi-name').value.trim(),
+        payment_instructions: document.getElementById('set-payment-instructions').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.success) {
+          alertBox.textContent = 'Settings saved successfully!';
+          alertBox.style.background = '#dcfce7';
+          alertBox.style.color = '#15803d';
+          alertBox.style.display = 'block';
+        } else {
+          alertBox.textContent = data.error || 'Failed to update settings.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+        }
+      } catch (err) {
+        alertBox.textContent = 'Connection error.';
+        alertBox.style.background = '#fee2e2';
+        alertBox.style.color = '#b91c1c';
+        alertBox.style.display = 'block';
+      }
+    });
+
+    // --- Reviews Management ---
+    async function loadReviews() {
+      const statusFilter = document.getElementById('review-status-filter')?.value || 'ALL';
+      const tbody = document.getElementById('reviews-table-body');
+      if (!tbody) return;
+
+      try {
+        const res = await fetch('/api/admin/reviews');
+        const data = await res.json();
+        if (data.success && data.reviews) {
+          let list = data.reviews;
+          if (statusFilter !== 'ALL') {
+            list = list.filter(r => r.status === statusFilter);
+          }
+
+          if (list.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-muted);">No reviews found.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = list.map(r => {
+            const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+            return `
+              <tr>
+                <td><strong>#${r.review_id}</strong></td>
+                <td><strong>${r.guest_name}</strong></td>
+                <td style="color: #f59e0b; font-size: 1.1rem; white-space: nowrap;">${stars}</td>
+                <td style="max-width: 320px;"><em>"${r.comment}"</em></td>
+                <td style="color: var(--text-muted); font-size: 0.85rem;">${r.stay_date || 'Verified Guest'}</td>
+                <td><span class="badge badge-${r.status.toLowerCase()}">${r.status}</span></td>
+                <td>
+                  <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+                    ${r.status !== 'APPROVED' ? `
+                      <button class="btn btn-sm btn-primary" onclick="updateReviewStatus(${r.review_id}, 'APPROVED')" style="padding: 0.25rem 0.55rem; font-size: 0.75rem;">Approve</button>
+                    ` : ''}
+                    ${r.status !== 'HIDDEN' ? `
+                      <button class="btn btn-sm" onclick="updateReviewStatus(${r.review_id}, 'HIDDEN')" style="padding: 0.25rem 0.55rem; font-size: 0.75rem; background: #64748b; color: #fff;">Hide</button>
+                    ` : ''}
+                    <button class="btn btn-sm" onclick="deleteReview(${r.review_id})" style="padding: 0.25rem 0.55rem; font-size: 0.75rem; background: #ef4444; color: #fff;">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error loading reviews.</td></tr>';
+      }
+    }
+
+    async function updateReviewStatus(revId, newStatus) {
+      try {
+        const res = await fetch(`/api/admin/reviews/${revId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadReviews();
+        } else {
+          alert(data.error || 'Failed to update review status.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    }
+
+    async function deleteReview(revId) {
+      if (!confirm('Are you sure you want to permanently delete this review?')) return;
+      try {
+        const res = await fetch(`/api/admin/reviews/${revId}`, {
+          method: 'DELETE'
+        });
+        const data = await res.json();
+        if (data.success) {
+          loadReviews();
+        } else {
+          alert(data.error || 'Failed to delete review.');
+        }
+      } catch (err) {
+        alert('Server error.');
+      }
+    }
+
+    document.getElementById('review-status-filter')?.addEventListener('change', loadReviews);
+    loadReviews();
+  </script>
+</body>
+</html>

@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yashaswi Residency Home Stay | Comfortable Stay in Manipal</title>
+  <meta name="description" content="Book a comfortable and peaceful stay at Yashaswi Residency Home Stay in Manipal, Karnataka. Clean spacious rooms, homely atmosphere, AC, Wi-Fi, and warm hospitality.">
+  <meta name="keywords" content="Yashaswi Residency, Manipal homestay, homestay in Manipal, hotels in Manipal, Manchikere stay, Rajeev Nagar Manipal">
+  
+  <!-- Open Graph Metadata -->
+  <meta property="og:title" content="Yashaswi Residency Home Stay | Comfortable Stay in Manipal">
+  <meta property="og:description" content="Experience a comfortable, peaceful stay in Manipal with spacious rooms, a homely atmosphere and warm hospitality.">
+  <meta property="og:image" content="/static/images/hero_exterior.jpg">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts: Cinzel & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+
+  <!-- Three.js Library for 3D Ambient Canvas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Structured Data (JSON-LD) for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "LodgingBusiness",
+    "name": "Yashaswi Residency Home Stay",
+    "image": "/static/images/hero_exterior.jpg",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "4th Cross Rd, Rajeev Nagar, Manchikere, Badagabettu",
+      "addressLocality": "Manipal",
+      "addressRegion": "Karnataka",
+      "postalCode": "576104",
+      "addressCountry": "IN"
+    },
+    "telephone": "087921 28459",
+    "priceRange": "₹2415 - ₹3450",
+    "checkinTime": "11:00",
+    "checkoutTime": "10:00",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5.0",
+      "reviewCount": "88"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ==========================================================================
+       1. NAVIGATION BAR
+       ========================================================================== -->
+  <header class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#home" class="nav-brand">
+        <div class="brand-symbol">Y</div>
+        <div class="brand-text">
+          <span class="brand-name">YASHASWI</span>
+          <span class="brand-sub">RESIDENCY • HOME STAY</span>
+        </div>
+      </a>
+
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="#home" class="nav-link">Home</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#rooms" class="nav-link">Rooms</a></li>
+        <li><a href="#amenities" class="nav-link">Amenities</a></li>
+        <li><a href="#gallery" class="nav-link">Gallery</a></li>
+        <li><a href="#reviews" class="nav-link">Reviews & Feedback</a></li>
+        <li><a href="#location" class="nav-link">Location</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-primary btn-sm btn-open-booking">Book Your Stay</button>
+        <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       2. HERO SECTION
+       ========================================================================== -->
+  <section class="hero-section" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div id="hero-3d-canvas"></div>
+
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <span>★ 5.0 RATED HOMESTAY IN MANIPAL</span>
+      </div>
+      <h1 class="hero-title">YASHASWI RESIDENCY</h1>
+      <div class="hero-tagline">HOME STAY</div>
+      <p style="color: var(--accent-light); font-weight: 600; font-size: 1.15rem; margin-bottom: 0.75rem; letter-spacing: 0.05em;">
+        "Comfort • Peace • Privacy • Homely Hospitality"
+      </p>
+      <p class="hero-desc">
+        Experience a comfortable and peaceful stay in Manipal with spacious rooms, a homely atmosphere and warm hospitality.
+      </p>
+
+      <div class="hero-btn-group">
+        <button class="btn btn-primary btn-open-booking">BOOK YOUR STAY</button>
+        <a href="#rooms" class="btn btn-outline-white">VIEW ROOMS</a>
+      </div>
+
+      <!-- Floating Glass Booking Card -->
+      <div class="floating-booking-card">
+        <form id="hero-availability-form" class="booking-form-grid">
+          <div class="form-field">
+            <label class="form-label">📅 Check-in</label>
+            <input type="date" id="hero-check-in" class="form-control" min="{{ today }}" value="{{ today }}" required>
+          </div>
+          <div class="form-field">
+            <label class="form-label">📅 Check-out</label>
+            <input type="date" id="hero-check-out" class="form-control" min="{{ today }}" required>
+          </div>
+          <div class="form-field">
+            <label class="form-label">👥 Guests</label>
+            <select id="hero-guests" class="form-control">
+              <option value="1">1 Guest</option>
+              <option value="2" selected>2 Guests</option>
+              <option value="3">3 Guests</option>
+              <option value="4">4 Guests</option>
+              <option value="5">5+ Guests</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <button type="submit" class="btn btn-primary" style="width: 100%;">
+              CHECK AVAILABILITY
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       3. ABOUT THE HOMESTAY
+       ========================================================================== -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image-wrapper">
+          <img src="/static/images/entrance_reception.png" alt="Yashaswi Residency Entrance Porch & Reception" class="about-image-main">
+          <div class="about-image-badge">
+            <div class="about-badge-icon">🏛️</div>
+            <div class="about-badge-text">
+              <strong>Homely Stay</strong>
+              <span>Manipal, Karnataka</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="about-text-content">
+          <span class="section-tag">About Yashaswi Residency</span>
+          <h2>A Serene & Welcoming Haven in Manipal</h2>
+          <p style="font-size: 1.1rem; line-height: 1.8; margin-top: 1.25rem;">
+            Yashaswi Residency is a comfortable home stay in Manipal designed for guests looking for a peaceful, clean and homely place to stay.
+          </p>
+          <p style="margin-top: 0.75rem;">
+            Whether you are visiting students at Manipal University, seeking quiet respite, or exploring coastal Karnataka, our residence offers genuine warmth, impeccable hygiene, and dedicated personal attention from our friendly host.
+          </p>
+
+          <div class="features-grid">
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Comfortable rooms</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Peaceful atmosphere</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Homely feel</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Friendly host</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Spacious accommodation</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Clean and well-maintained surroundings</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Buddha Zen sanctum & meditation court</span>
+            </div>
+            <div class="feature-pill">
+              <div class="feature-check">✓</div>
+              <span>Honeymoon & romantic celebration decor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       4. ROOMS SECTION
+       ========================================================================== -->
+  <section class="section" id="rooms" style="background: #f7f5ef;">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="section-tag">Our Accommodations</span>
+        <h2>Spacious, Serene & Comfortable Stays</h2>
+        <p class="section-subtitle">
+          Thoughtfully arranged rooms fitted with climate control, quality bedding, and modern amenities.
+          <br>
+          <strong style="color: var(--wood);">Starting from ₹2,415 / night</strong> (Reference starting price)
+        </p>
+      </div>
+
+      <div class="rooms-grid">
+        {% for room in rooms %}
+        <div class="room-card" data-room-id="{{ room.room_id }}">
+          <div class="room-image-wrap">
+            {% if room.photos and room.photos|length > 0 %}
+            <img src="{{ room.photos[0] }}" alt="{{ room.name }}" class="room-img">
+            {% else %}
+            <img src="/static/images/living_lounge.png" alt="{{ room.name }}" class="room-img">
+            {% endif %}
+            <div class="room-price-badge">
+              Starting from <span>₹{{ "%.0f"|format(room.price_per_night) }}</span> / night
+            </div>
+          </div>
+
+          <div class="room-content">
+            <div class="room-capacity">
+              👤 Up to {{ room.capacity }} Guests • {{ room.bed_type }}
+            </div>
+            <h3 class="room-title">{{ room.name }}</h3>
+            <p class="room-desc">{{ room.description }}</p>
+
+            <div class="room-amenities-tags">
+              {% for amenity in room.amenities[:4] %}
+              <span class="amenity-tag">✓ {{ amenity }}</span>
+              {% endfor %}
+              {% if room.amenities|length > 4 %}
+              <span class="amenity-tag">+{{ room.amenities|length - 4 }} more</span>
+              {% endif %}
+            </div>
+
+            <div class="room-card-footer">
+              <button class="btn btn-outline-dark btn-sm btn-view-room" data-room-id="{{ room.room_id }}">
+                VIEW DETAILS
+              </button>
+              <button class="btn btn-primary btn-sm btn-open-booking" data-room-id="{{ room.room_id }}">
+                BOOK NOW
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       5. AMENITIES SECTION
+       ========================================================================== -->
+  <section class="section" id="amenities">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="section-tag">Guest Conveniences</span>
+        <h2>Thoughtfully Curated Amenities</h2>
+        <p class="section-subtitle">
+          Everything you need for a restful, pleasant, and seamless stay in Manipal.
+        </p>
+      </div>
+
+      <div class="amenities-grid">
+        <div class="amenity-card">
+          <div class="amenity-icon-box">📶</div>
+          <h4>Free Wi-Fi</h4>
+          <p>High-speed wireless connectivity throughout the property for remote work and streaming.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">☕</div>
+          <h4>Breakfast</h4>
+          <p>Wholesome and delicious homely breakfast provided to kickstart your day.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">🚗</div>
+          <h4>Free Parking</h4>
+          <p>Dedicated secure on-site vehicle parking inside the gated residency premises.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">❄️</div>
+          <h4>Air-Conditioned Accommodation</h4>
+          <p>Individual climate control air conditioning for a peaceful night's rest in coastal weather.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">🏊</div>
+          <h4>Pool</h4>
+          <p>Refreshing swimming pool facility available for relaxation and leisurely swims.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">⚡</div>
+          <h4>24/7 Power Backup</h4>
+          <p>Uninterrupted power supply and solar hot water systems for seamless guest convenience.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">🧹</div>
+          <h4>Housekeeping</h4>
+          <p>Meticulous daily cleanliness and sanitization ensuring spotless rooms and bathrooms.</p>
+        </div>
+
+        <div class="amenity-card">
+          <div class="amenity-icon-box">🌿</div>
+          <h4>Peaceful Surroundings</h4>
+          <p>Nestled in a calm, safe residential layout free from heavy highway traffic and noise.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       6. GALLERY MASONRY & LIGHTBOX
+       ========================================================================== -->
+  <section class="section" id="gallery" style="background: #f7f5ef;">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="section-tag">Visual Tour</span>
+        <h2>Real Photographs of Yashaswi Residency</h2>
+        <p class="section-subtitle">
+          Explore authentic images showcasing our building facade, living lounges, and cozy guest accommodations.
+        </p>
+      </div>
+
+      <div class="gallery-filter-bar">
+        <button class="filter-btn active" data-filter="all">All Photos (10)</button>
+        <button class="filter-btn" data-filter="exterior">Exterior & Porch</button>
+        <button class="filter-btn" data-filter="living">Living & Suites</button>
+        <button class="filter-btn" data-filter="celebration">Honeymoon & Zen Court</button>
+      </div>
+
+      <div class="gallery-grid">
+        <!-- 1. Exterior (Hero photo) -->
+        <div class="gallery-item col-8" data-category="exterior">
+          <img src="/static/images/hero_exterior.jpg" alt="Yashaswi Residency Exterior Facade" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Exterior</span>
+            <div class="gallery-caption">Yashaswi Residency Multi-Storey Exterior Facade</div>
+          </div>
+        </div>
+
+        <!-- 2. Buddha Zen Sanctum & Meditation Court -->
+        <div class="gallery-item col-4" data-category="celebration">
+          <img src="/static/images/buddha_zen_sanctum.jpg" alt="Buddha Zen Sanctum & Meditation Court" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Zen Court</span>
+            <div class="gallery-caption">Buddha Zen Sanctum with Lush Greenery & Torch Sconces</div>
+          </div>
+        </div>
+
+        <!-- 3. Romantic Honeymoon / Celebration Suite Setup -->
+        <div class="gallery-item col-6" data-category="celebration living">
+          <img src="/static/images/honeymoon_romantic_suite.jpg" alt="Honeymoon & Celebration Suite Setup" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Celebration Special</span>
+            <div class="gallery-caption">Romantic Honeymoon Suite with Candlelight, Rose Heart & Fairy Lights</div>
+          </div>
+        </div>
+
+        <!-- 4. Entrance Porch & Reception -->
+        <div class="gallery-item col-6" data-category="exterior">
+          <img src="/static/images/entrance_reception.png" alt="Entrance Porch & Reception Area" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Entrance</span>
+            <div class="gallery-caption">Entrance Porch with Carved Wooden Door & Notice Board</div>
+          </div>
+        </div>
+
+        <!-- 5. Living Area / TV Lounge -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/living_lounge.png" alt="Living Lounge with TV Console" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living Area</span>
+            <div class="gallery-caption">Relaxing Living Lounge with Wood Coffee Table & TV</div>
+          </div>
+        </div>
+
+        <!-- 6. Premium Lounge with Wood Paneling -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/premium_wood_lounge.png" alt="Premium Wood-Paneled Lounge with Plants" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living Area</span>
+            <div class="gallery-caption">Premium Designer Lounge with Vertical Wood Paneling & Plants</div>
+          </div>
+        </div>
+
+        <!-- 7. Family Suite Lounge -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/family_suite_lounge.png" alt="Spacious Family Suite Lounge with Blue Sofa" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living Area</span>
+            <div class="gallery-caption">Spacious Family Sitting Lounge with Multi-Piece Sofa Set</div>
+          </div>
+        </div>
+
+        <!-- 8. Open Living & Kitchen Dining -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/lounge_kitchen_open.jpg" alt="Open Living Lounge & Dining with Kitchenette" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living & Dining</span>
+            <div class="gallery-caption">Open Living Lounge & Dining Suite with Kitchenette & Smart TV</div>
+          </div>
+        </div>
+
+        <!-- 9. Modern Teak Coffee Table Lounge -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/dining_living_suite.jpg" alt="Living Suite with Teak Coffee Table" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living Area</span>
+            <div class="gallery-caption">Sunlit Living Suite with Teak Coffee Table & Polished Floor</div>
+          </div>
+        </div>
+
+        <!-- 10. Private Suite Lounge with French Doors -->
+        <div class="gallery-item col-4" data-category="living">
+          <img src="/static/images/lounge_french_doors.jpg" alt="Private Suite Lounge with Handcrafted French Doors" class="gallery-img">
+          <div class="gallery-overlay">
+            <span class="gallery-tag">Living Area</span>
+            <div class="gallery-caption">Private Suite Lounge with Handcrafted Double Teak French Doors</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       7. REVIEWS SECTION
+       ========================================================================== -->
+  <section class="section" id="reviews">
+    <div id="feedback" style="position: relative; top: -100px;"></div>
+    <div class="container" style="text-align: center;">
+      <span class="section-tag">Guest Experiences & Reviews</span>
+      <h2>What Our Guests Say About Their Stay</h2>
+
+      <div style="display: flex; justify-content: center; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1.5rem; margin-bottom: 2.5rem;">
+        <div class="review-stats-badge" style="margin-bottom: 0;">
+          <span class="review-score">5.0</span>
+          <div class="review-stars">★★★★★</div>
+          <span style="font-weight: 600; color: var(--text-muted);">88 Verified Reviews</span>
+        </div>
+        <button class="btn btn-primary" id="btn-open-feedback" style="background: linear-gradient(135deg, var(--accent) 0%, var(--wood) 100%); font-weight: 700; padding: 0.85rem 1.75rem; box-shadow: 0 8px 24px rgba(198, 146, 85, 0.45); font-size: 0.95rem;">
+          ✍️ SHARE YOUR FEEDBACK / REVIEW
+        </button>
+      </div>
+
+      <div class="reviews-grid" id="reviews-grid-container">
+        {% for rev in reviews %}
+        <div class="review-card">
+          <div class="review-card-stars">
+            {% for i in range(rev.rating) %}★{% endfor %}
+          </div>
+          <div class="review-quote">"{{ rev.comment }}"</div>
+          <div class="reviewer-meta">
+            <div class="reviewer-avatar">{{ rev.guest_name[0] }}</div>
+            <div style="text-align: left;">
+              <div class="reviewer-name">{{ rev.guest_name }}</div>
+              <div class="reviewer-date">{{ rev.stay_date or "Verified Guest" }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       8. LOCATION & CONTACT SECTION
+       ========================================================================== -->
+  <section class="section" id="location" style="background: #f7f5ef;">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="section-tag">Convenient Location</span>
+        <h2>Find Us in Manipal</h2>
+        <p class="section-subtitle">
+          Situated in a peaceful residential community with easy access to Manipal University and city attractions.
+        </p>
+      </div>
+
+      <div class="location-card-grid">
+        <div class="location-info-panel">
+          <h3 style="margin-bottom: 1.5rem; color: var(--primary);">YASHASWI Residency Home Stay</h3>
+
+          <div class="location-detail-item">
+            <div class="location-icon-circle">📍</div>
+            <div>
+              <strong>Full Address:</strong>
+              <p>4th Cross Rd, Manipal, Rajeev Nagar, Manchikere, Manipal, Badagabettu, Karnataka 576104</p>
+            </div>
+          </div>
+
+          <div class="location-detail-item">
+            <div class="location-icon-circle">📞</div>
+            <div>
+              <strong>Official Phone:</strong>
+              <p><a href="tel:08792128459" style="color: var(--accent); font-weight: 700; font-size: 1.1rem;">087921 28459</a></p>
+            </div>
+          </div>
+
+          <div class="location-detail-item">
+            <div class="location-icon-circle">⏰</div>
+            <div>
+              <strong>Stay Schedule:</strong>
+              <p>Check-in: <strong>11:00 AM</strong> • Check-out: <strong>10:00 AM</strong></p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap;">
+            <a href="https://maps.google.com/?q=Yashaswi+Residency+Home+Stay+Manipal+Karnataka" target="_blank" class="btn btn-primary btn-sm">
+              GET DIRECTIONS
+            </a>
+            <a href="tel:08792128459" class="btn btn-outline-dark btn-sm">
+              CALL NOW
+            </a>
+          </div>
+        </div>
+
+        <div class="location-map-wrapper">
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3881.932918833917!2d74.7745!3d13.3485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbca4a84e937d2f%3A0x6b940e7d56637e1a!2sManipal%2C%20Karnataka%20576104!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Yashaswi Residency Location Map">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       9. CALL TO ACTION SECTION
+       ========================================================================== -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-banner">
+        <h2>Ready for a Comfortable Stay?</h2>
+        <p>Book your stay at Yashaswi Residency and experience a peaceful, homely stay in Manipal.</p>
+        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+          <a href="#home" class="btn btn-outline-white">CHECK AVAILABILITY</a>
+          <button class="btn btn-primary btn-open-booking">BOOK YOUR STAY</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       10. FOOTER
+       ========================================================================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3 class="font-heading">YASHASWI RESIDENCY</h3>
+          <div class="footer-tagline">HOME STAY</div>
+          <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 1.5rem;">
+            "Comfort • Peace • Privacy • Homely Hospitality"
+          </p>
+          <p style="color: #64748b; font-size: 0.88rem;">
+            A premier hospitality homestay located in Manipal, Karnataka offering guests unmatched serenity, cleanliness, and personalized care.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#rooms">Our Rooms</a></li>
+            <li><a href="#amenities">Amenities</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#reviews">Guest Reviews</a></li>
+            <li><a href="#feedback" onclick="document.getElementById('btn-open-feedback')?.click()" style="color: var(--accent); font-weight: 600;">✍️ Leave Guest Feedback</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Information</h4>
+          <ul>
+            <li><a href="#location">Location</a></li>
+            <li><a href="#rooms">Reference Tariffs</a></li>
+            <li><a href="#home">Check-in: 11:00 AM</a></li>
+            <li><a href="#home">Check-out: 10:00 AM</a></li>
+            <li><a href="/admin/login" class="footer-admin-link">Staff Login</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4>Contact & Address</h4>
+          <p style="color: #e2e8f0; margin-bottom: 0.75rem;">
+            📞 <a href="tel:08792128459" style="color: var(--accent); font-weight: 700;">087921 28459</a>
+          </p>
+          <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+            📍 4th Cross Rd, Manipal, Rajeev Nagar, Manchikere, Manipal, Badagabettu, Karnataka 576104
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 Yashaswi Residency Home Stay. All Rights Reserved.</div>
+        <div>
+          <a href="/admin/login" class="footer-admin-link">🔐 Owner & Manager Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==========================================================================
+       11. MOBILE STICKY BAR
+       ========================================================================== -->
+  <div class="mobile-sticky-bar">
+    <div class="mobile-price-tag">
+      <strong>₹2,415 / night</strong>
+      <span>Starting reference price</span>
+    </div>
+    <button class="btn btn-primary btn-sm btn-open-booking">Book Now</button>
+  </div>
+
+  <!-- ==========================================================================
+       12. MODALS
+       ========================================================================== -->
+
+  <!-- A. Room Details Modal -->
+  <div class="modal-backdrop" id="room-details-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="room-modal-title">Room Details</h3>
+        <p id="room-modal-category">Homestay Room</p>
+        <button class="modal-close-btn" id="room-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="room-modal-gallery"></div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.25rem 0 0.75rem;">
+          <h4 id="room-modal-price" style="color: var(--accent); font-size: 1.4rem;">₹2,415 / night</h4>
+          <span id="room-modal-capacity" style="color: var(--text-muted); font-size: 0.9rem;">2 Guests</span>
+        </div>
+        <p id="room-modal-desc" style="color: var(--text-main); line-height: 1.7; margin-bottom: 1.5rem;"></p>
+        
+        <h4 style="margin-bottom: 0.75rem;">Included Room Amenities</h4>
+        <div id="room-modal-amenities" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;"></div>
+
+        <button class="btn btn-primary" style="width: 100%;" id="room-modal-book-btn">
+          BOOK THIS ROOM
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- B. Real Booking Modal -->
+  <div class="modal-backdrop" id="booking-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Reserve Your Stay</h3>
+        <p>Yashaswi Residency Home Stay, Manipal</p>
+        <button class="modal-close-btn" id="booking-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="booking-alert" style="display: none; padding: 0.85rem 1rem; background: #fee2e2; color: #b91c1c; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+        
+        <form id="booking-form" style="display: flex; flex-direction: column; gap: 1.1rem;">
+          <div class="form-field">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="booking-name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Mobile Number *</label>
+              <input type="tel" id="booking-phone" class="form-control" placeholder="10-digit number" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Email Address *</label>
+              <input type="email" id="booking-email" class="form-control" placeholder="name@example.com" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Select Room / Stay Option *</label>
+            <select id="booking-room-select" class="form-control" required>
+              {% for room in rooms %}
+              <option value="{{ room.room_id }}">{{ room.name }} (Starting ₹{{ "%.0f"|format(room.price_per_night) }}/night)</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-field">
+              <label class="form-label">Check-in Date *</label>
+              <input type="date" id="booking-check-in" class="form-control" min="{{ today }}" value="{{ today }}" required>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Check-out Date *</label>
+              <input type="date" id="booking-check-out" class="form-control" min="{{ today }}" required>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Number of Guests</label>
+            <select id="booking-guests" class="form-control">
+              <option value="1">1 Guest</option>
+              <option value="2" selected>2 Guests</option>
+              <option value="3">3 Guests</option>
+              <option value="4">4 Guests</option>
+              <option value="5">5+ Guests</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Special Requests (Optional)</label>
+            <textarea id="booking-requests" class="form-control" rows="2" placeholder="Late arrival, extra pillows, temple visit guidance..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;">
+            CONFIRM BOOKING
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- C. Booking Confirmation Screen Modal -->
+  <div class="modal-backdrop" id="confirm-modal">
+    <div class="modal-box" style="text-align: center;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #10b981 0%, #047857 100%);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.25rem;">✓</div>
+        <h3>Booking Confirmed!</h3>
+        <p>Thank you for choosing Yashaswi Residency Home Stay</p>
+        <button class="modal-close-btn" id="confirm-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="background: #f8fafc; border: 1px dashed var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; text-align: left;">
+          <div style="margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">Booking Reference ID:</div>
+          <div id="confirm-id" style="font-family: var(--font-heading); font-size: 1.6rem; color: var(--primary); font-weight: 700; margin-bottom: 1rem;"></div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; font-size: 0.95rem;">
+            <div><strong>Guest:</strong> <span id="confirm-guest"></span></div>
+            <div><strong>Room:</strong> <span id="confirm-room"></span></div>
+            <div><strong>Stay:</strong> <span id="confirm-dates"></span></div>
+            <div><strong>Estimated Total:</strong> <span id="confirm-amount" style="color: var(--accent); font-weight: 700;"></span></div>
+          </div>
+        </div>
+
+        <div id="confirm-upi-info" style="display: none; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 0.85rem; margin-bottom: 1.5rem; font-size: 0.9rem; text-align: left;"></div>
+
+        <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Our homestay team has recorded your reservation. To confirm your arrival time or complete your advance payment via UPI, tap below to chat with the owner on WhatsApp:
+        </p>
+
+        <a id="confirm-wa-btn" href="#" target="_blank" class="btn btn-primary" style="background: #25d366; border: none; width: 100%; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35);">
+          💬 CONNECT WITH OWNER ON WHATSAPP
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- D. Lightbox Modal -->
+  <div class="lightbox-modal" id="lightbox-modal">
+    <button class="lightbox-close" id="lightbox-close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev">&#10094;</button>
+    <div class="lightbox-content">
+      <img src="" alt="" class="lightbox-image" id="lightbox-img">
+      <div class="lightbox-caption-text" id="lightbox-caption"></div>
+    </div>
+    <button class="lightbox-nav lightbox-next" id="lightbox-next">&#10095;</button>
+  </div>
+
+  <!-- E. Feedback Submission Modal -->
+  <div class="modal-backdrop" id="feedback-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Share Your Feedback</h3>
+        <p>Yashaswi Residency Home Stay, Manipal</p>
+        <button class="modal-close-btn" id="feedback-modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="feedback-alert" style="display: none; padding: 0.85rem 1rem; border-radius: 8px; font-size: 0.9rem; margin-bottom: 1rem;"></div>
+
+        <form id="feedback-form" style="display: flex; flex-direction: column; gap: 1.15rem;">
+          <div class="form-field">
+            <label class="form-label">Your Rating *</label>
+            <div id="star-rating-picker" style="display: flex; gap: 0.5rem; font-size: 2rem; cursor: pointer; color: #f59e0b; user-select: none;">
+              <span class="star-item" data-val="1">★</span>
+              <span class="star-item" data-val="2">★</span>
+              <span class="star-item" data-val="3">★</span>
+              <span class="star-item" data-val="4">★</span>
+              <span class="star-item" data-val="5">★</span>
+            </div>
+            <input type="hidden" id="feedback-rating" value="5">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Full Name *</label>
+            <input type="text" id="feedback-name" class="form-control" placeholder="e.g. Ramesh Hegde" required>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Month / Purpose of Stay (Optional)</label>
+            <input type="text" id="feedback-stay-date" class="form-control" placeholder="e.g. October 2026, Family Vacation, Student Visit">
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Your Experience & Feedback *</label>
+            <textarea id="feedback-comment" class="form-control" rows="4" placeholder="How was the cleanliness, peaceful atmosphere, hospitality, and comfort during your stay?" required></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="feedback-submit-btn" style="margin-top: 0.5rem;">
+            SUBMIT FEEDBACK
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Feedback Action Button (Available Across the Whole Page) -->
+  <button class="floating-feedback-btn" id="floating-feedback-btn" onclick="document.getElementById('btn-open-feedback')?.click()" title="Share Your Feedback">
+    ✍️ Share Feedback
+  </button>
+
+  <!-- Scripts -->
+  <script src="/static/js/three-hero.js"></script>
+  <script src="/static/js/main.js"></script>
+</body>
+</html>

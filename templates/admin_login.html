@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal Login | Yashaswi Residency Home Stay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #091a2d 0%, #0f2b48 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-xl);
+      padding: 3rem 2.5rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .login-brand-symbol {
+      width: 58px;
+      height: 58px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+      color: #fff;
+      font-size: 1.8rem;
+      font-family: var(--font-heading);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 6px 18px rgba(15, 43, 72, 0.25);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="login-brand-symbol">Y</div>
+    <h2 style="font-size: 1.6rem; color: var(--primary); margin-bottom: 0.3rem;">Owner Portal</h2>
+    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 2rem;">Yashaswi Residency Home Stay, Manipal</p>
+
+    <div id="login-error" style="display: none; padding: 0.75rem 1rem; background: #fee2e2; color: #b91c1c; border-radius: 8px; font-size: 0.88rem; margin-bottom: 1.25rem;"></div>
+
+    <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 1.2rem; text-align: left;">
+      <div class="form-field">
+        <label class="form-label">Username</label>
+        <input type="text" id="username" class="form-control" placeholder="admin" required autofocus>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Password</label>
+        <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" id="login-submit-btn">
+        SECURE LOGIN
+      </button>
+    </form>
+
+    <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.25rem;">
+      <a href="/" style="font-size: 0.88rem; color: var(--wood); font-weight: 600;">← Back to Public Website</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById('login-error');
+      const submitBtn = document.getElementById('login-submit-btn');
+      errBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Verifying...';
+
+      const payload = {
+        username: document.getElementById('username').value.trim(),
+        password: document.getElementById('password').value.trim()
+      };
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          window.location.href = '/admin/dashboard';
+        } else {
+          errBox.textContent = data.error || 'Invalid credentials.';
+          errBox.style.display = 'block';
+        }
+      } catch (err) {
+        errBox.textContent = 'Connection error. Please try again.';
+        errBox.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'SECURE LOGIN';
+      }
+    });
+  </script>
+</body>
+</html>
