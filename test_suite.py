@@ -213,5 +213,77 @@ class YashaswiResidencyVerificationTests(unittest.TestCase):
         res_del = self.client.delete(f"/api/admin/reviews/{rev_id}")
         self.assertEqual(res_del.status_code, 200)
 
+    def test_10_room_edit_flow(self):
+        """Verify room detail fetch and room update (PUT) flow."""
+        self.client.post("/api/admin/login", json={"username": "admin", "password": "yashaswi2026!"})
+        
+        # 1. Fetch room 1 details
+        res_get = self.client.get("/api/admin/rooms/1")
+        self.assertEqual(res_get.status_code, 200)
+        data = json.loads(res_get.data)
+        self.assertTrue(data.get("success"))
+        orig_room = data.get("room")
+        self.assertIsNotNone(orig_room)
+
+        # 2. Update room 1
+        update_payload = dict(orig_room)
+        update_payload["price_per_night"] = 2599.0
+        update_payload["description"] = "Updated peaceful room description for testing."
+        res_put = self.client.put("/api/admin/rooms/1", json=update_payload)
+        self.assertEqual(res_put.status_code, 200)
+
+        # 3. Verify updated details
+        res_verify = self.client.get("/api/admin/rooms/1")
+        verify_data = json.loads(res_verify.data)
+        self.assertEqual(verify_data.get("room", {}).get("price_per_night"), 2599.0)
+
+        # 4. Restore original price
+        orig_room["price_per_night"] = orig_room.get("price_per_night", 2415.0)
+        self.client.put("/api/admin/rooms/1", json=orig_room)
+
+    def test_11_admin_credential_change(self):
+        """Verify secure admin credential change endpoint and verification."""
+        self.client.post("/api/admin/login", json={"username": "admin", "password": "yashaswi2026!"})
+
+        # 1. Invalid current password should fail
+        res_bad = self.client.post("/api/admin/change-credentials", json={
+            "current_password": "wrongpassword!",
+            "new_username": "newowner"
+        })
+        self.assertEqual(res_bad.status_code, 400)
+
+        # 2. Password mismatch should fail
+        res_mismatch = self.client.post("/api/admin/change-credentials", json={
+            "current_password": "yashaswi2026!",
+            "new_password": "pass123456",
+            "confirm_password": "pass654321"
+        })
+        self.assertEqual(res_mismatch.status_code, 400)
+
+        # 3. Successful change
+        res_ok = self.client.post("/api/admin/change-credentials", json={
+            "current_password": "yashaswi2026!",
+            "new_username": "owner_manipal",
+            "new_password": "newsecret2026!",
+            "confirm_password": "newsecret2026!"
+        })
+        self.assertEqual(res_ok.status_code, 200)
+
+        # 4. Verify login with new credentials succeeds
+        res_login_new = self.client.post("/api/admin/login", json={
+            "username": "owner_manipal",
+            "password": "newsecret2026!"
+        })
+        self.assertEqual(res_login_new.status_code, 200)
+
+        # 5. Restore default credentials to keep test suite clean
+        res_restore = self.client.post("/api/admin/change-credentials", json={
+            "current_password": "newsecret2026!",
+            "new_username": "admin",
+            "new_password": "yashaswi2026!",
+            "confirm_password": "yashaswi2026!"
+        })
+        self.assertEqual(res_restore.status_code, 200)
+
 if __name__ == "__main__":
     unittest.main()

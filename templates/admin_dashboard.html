@@ -1421,6 +1421,7 @@ img {
     body {
       background: #f1f5f9;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     .admin-navbar {
       background: var(--primary);
@@ -1430,6 +1431,8 @@ img {
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 4px 15px rgba(15, 43, 72, 0.15);
+      flex-wrap: wrap;
+      gap: 1rem;
     }
     .admin-brand {
       display: flex;
@@ -1440,6 +1443,12 @@ img {
       font-size: 1.25rem;
       font-weight: 700;
     }
+    .admin-navbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+    }
     .admin-content {
       max-width: 1300px;
       margin: 2rem auto;
@@ -1447,7 +1456,7 @@ img {
     }
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 1.25rem;
       margin-bottom: 2rem;
     }
@@ -1474,9 +1483,13 @@ img {
     }
     .tabs-header {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       border-bottom: 2px solid var(--border);
       margin-bottom: 2rem;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
     }
     .tab-btn {
       padding: 0.85rem 1.5rem;
@@ -1489,6 +1502,7 @@ img {
       cursor: pointer;
       position: relative;
       transition: color var(--transition-fast);
+      flex-shrink: 0;
     }
     .tab-btn.active {
       color: var(--primary);
@@ -1496,7 +1510,7 @@ img {
     .tab-btn.active::after {
       content: '';
       position: absolute;
-      bottom: -2px;
+      bottom: -4px;
       left: 0;
       right: 0;
       height: 3px;
@@ -1518,10 +1532,13 @@ img {
       margin-bottom: 2rem;
     }
     .table-responsive {
+      width: 100%;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .admin-table {
       width: 100%;
+      min-width: 650px;
       border-collapse: collapse;
       text-align: left;
       font-size: 0.9rem;
@@ -1555,6 +1572,87 @@ img {
     .badge-available { background: #dcfce7; color: #15803d; }
     .badge-occupied { background: #fef3c7; color: #b45309; }
     .badge-maintenance { background: #fee2e2; color: #b91c1c; }
+    .badge-blocked { background: #e2e8f0; color: #475569; }
+
+    /* Form Grids with Mobile Stacking */
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-row-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+
+    /* Mobile Media Queries */
+    @media (max-width: 768px) {
+      .admin-navbar {
+        padding: 0.85rem 1rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+      .admin-brand {
+        font-size: 1.05rem;
+        justify-content: center;
+      }
+      .admin-navbar-actions {
+        justify-content: space-between;
+        gap: 0.5rem;
+      }
+      .admin-content {
+        padding: 0 0.85rem;
+        margin: 1rem auto;
+      }
+      .panel-card {
+        padding: 1.25rem;
+      }
+      .tabs-header {
+        margin-bottom: 1.25rem;
+      }
+      .tab-btn {
+        padding: 0.65rem 1rem;
+        font-size: 0.88rem;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+      .stat-card {
+        padding: 1rem;
+      }
+      .stat-value {
+        font-size: 1.4rem;
+      }
+      .form-row-2, .form-row-3 {
+        grid-template-columns: 1fr !important;
+      }
+      .modal-box {
+        max-width: 95vw !important;
+        margin: 0.5rem auto;
+      }
+      .modal-header {
+        padding: 1.25rem 1.5rem;
+      }
+      .modal-body {
+        padding: 1.25rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .admin-navbar-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .admin-navbar-actions a, .admin-navbar-actions span {
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1566,9 +1664,9 @@ img {
       <span>YASHASWI RESIDENCY • OWNER PORTAL</span>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 1.25rem;">
-      <a href="/" target="_blank" class="btn btn-outline-white btn-sm">🌐 View Public Website</a>
-      <span style="font-size: 0.88rem; color: #94a3b8;">Logged in as: <strong>{{ admin_user }}</strong></span>
+    <div class="admin-navbar-actions">
+      <a href="/" target="_blank" class="btn btn-outline-white btn-sm">🌐 Public Website</a>
+      <span style="font-size: 0.88rem; color: #94a3b8;">User: <strong id="admin-logged-in-user" style="color: #fff;">{{ admin_user }}</strong></span>
       <a href="/api/admin/logout" class="btn btn-primary btn-sm" style="background: #ef4444; border-color: #ef4444; box-shadow: none;">Logout</a>
     </div>
   </header>
@@ -1712,7 +1810,7 @@ img {
         <div id="settings-alert" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem;"></div>
 
         <form id="settings-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-field">
               <label class="form-label">Official Phone</label>
               <input type="text" id="set-phone" class="form-control" value="{{ settings.phone }}">
@@ -1728,7 +1826,7 @@ img {
             <input type="text" id="set-address" class="form-control" value="{{ settings.address }}">
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-field">
               <label class="form-label">Check-in Time</label>
               <input type="text" id="set-checkin" class="form-control" value="{{ settings.check_in_time }}">
@@ -1749,7 +1847,7 @@ img {
             </label>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-field">
               <label class="form-label">Official UPI ID</label>
               <input type="text" id="set-upi-id" class="form-control" value="{{ settings.upi_id }}" placeholder="8792128459@upi">
@@ -1765,8 +1863,54 @@ img {
             <textarea id="set-payment-instructions" class="form-control" rows="3">{{ settings.payment_instructions }}</textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 0.5rem;">
+          <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 0.5rem;" id="btn-save-settings">
             SAVE SETTINGS
+          </button>
+        </form>
+      </div>
+
+      <!-- ADMIN CREDENTIALS & SECURITY CARD -->
+      <div class="panel-card" style="max-width: 800px; margin-top: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <span style="font-size: 1.4rem;">🔐</span>
+          <h3 style="color: var(--primary); margin: 0;">Admin Credentials & Security</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+          Change your Owner Portal login username and password. For security, your current password is required to authorize updates.
+        </p>
+
+        <div id="cred-alert" style="display: none; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem; font-size: 0.9rem;"></div>
+
+        <form id="credentials-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+          <div class="form-row-2">
+            <div class="form-field">
+              <label class="form-label">Current Username</label>
+              <input type="text" id="curr-username-display" class="form-control" value="{{ admin_user }}" disabled style="background: #f1f5f9; cursor: not-allowed; color: #475569; font-weight: 600;">
+            </div>
+            <div class="form-field">
+              <label class="form-label">New Username (Optional)</label>
+              <input type="text" id="new-admin-username" class="form-control" placeholder="Leave empty to keep current">
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-label">Current Password * (Required for verification)</label>
+            <input type="password" id="current-admin-password" class="form-control" placeholder="Enter current password to verify" required>
+          </div>
+
+          <div class="form-row-2">
+            <div class="form-field">
+              <label class="form-label">New Password (Optional)</label>
+              <input type="password" id="new-admin-password" class="form-control" placeholder="Minimum 6 characters">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" id="confirm-admin-password" class="form-control" placeholder="Re-enter new password">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 0.5rem;" id="btn-save-credentials">
+            UPDATE CREDENTIALS
           </button>
         </form>
       </div>
@@ -1824,7 +1968,7 @@ img {
         <form id="room-editor-form" style="display: flex; flex-direction: column; gap: 1rem;">
           <input type="hidden" id="edit-room-id">
           
-          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+          <div class="form-row-2">
             <div class="form-field">
               <label class="form-label">Room Number *</label>
               <input type="text" id="edit-room-number" class="form-control" placeholder="YR-401" required>
@@ -1835,7 +1979,7 @@ img {
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+          <div class="form-row-3">
             <div class="form-field">
               <label class="form-label">Category</label>
               <select id="edit-room-category" class="form-control">
@@ -1846,7 +1990,7 @@ img {
             </div>
             <div class="form-field">
               <label class="form-label">Price / Night (₹) *</label>
-              <input type="number" id="edit-room-price" class="form-control" placeholder="2415" required>
+              <input type="number" id="edit-room-price" class="form-control" placeholder="2415" required step="1" min="0">
             </div>
             <div class="form-field">
               <label class="form-label">Capacity (Guests)</label>
@@ -1854,9 +1998,20 @@ img {
             </div>
           </div>
 
-          <div class="form-field">
-            <label class="form-label">Bed Type</label>
-            <input type="text" id="edit-room-bed" class="form-control" value="King / Queen Bed">
+          <div class="form-row-2">
+            <div class="form-field">
+              <label class="form-label">Bed Type</label>
+              <input type="text" id="edit-room-bed" class="form-control" value="King / Queen Bed">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Room Status</label>
+              <select id="edit-room-status" class="form-control">
+                <option value="AVAILABLE">AVAILABLE (Open for Bookings)</option>
+                <option value="OCCUPIED">OCCUPIED (Guest Staying)</option>
+                <option value="MAINTENANCE">MAINTENANCE (Temporarily Closed)</option>
+                <option value="BLOCKED">BLOCKED (Reserved / Private)</option>
+              </select>
+            </div>
           </div>
 
           <div class="form-field">
@@ -1885,9 +2040,14 @@ img {
             </select>
           </div>
 
-          <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem;" id="btn-save-room">
-            SAVE ROOM
-          </button>
+          <div style="display: flex; gap: 0.75rem; justify-content: space-between; align-items: center; margin-top: 0.5rem; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" id="btn-save-room">
+              SAVE ROOM
+            </button>
+            <button type="button" class="btn btn-sm" id="btn-delete-room" style="display: none; background: #fee2e2; color: #b91c1c; border-color: #fca5a5;">
+              🗑️ Delete Room
+            </button>
+          </div>
         </form>
       </div>
     </div>
@@ -2008,17 +2168,107 @@ img {
     const roomEditorModal = document.getElementById('modal-room-editor');
     const roomEditorClose = document.getElementById('room-editor-close');
     const roomEditorForm = document.getElementById('room-editor-form');
+    const btnDeleteRoom = document.getElementById('btn-delete-room');
+
+    async function openRoomEditor(roomId) {
+      try {
+        const res = await fetch(`/api/admin/rooms/${roomId}`);
+        const data = await res.json();
+        if (!data.success || !data.room) {
+          alert(data.error || 'Failed to load room details.');
+          return;
+        }
+
+        const r = data.room;
+        document.getElementById('room-editor-title').textContent = `Edit Room: ${r.room_number}`;
+        document.getElementById('edit-room-id').value = r.room_id;
+        document.getElementById('edit-room-number').value = r.room_number || '';
+        document.getElementById('edit-room-name').value = r.name || '';
+        document.getElementById('edit-room-category').value = r.category || 'Comfortable';
+        document.getElementById('edit-room-price').value = r.price_per_night || '';
+        document.getElementById('edit-room-capacity').value = r.capacity || 2;
+        document.getElementById('edit-room-bed').value = r.bed_type || 'King / Queen Bed';
+        document.getElementById('edit-room-status').value = r.status || 'AVAILABLE';
+        document.getElementById('edit-room-desc').value = r.description || '';
+        document.getElementById('edit-room-amenities').value = Array.isArray(r.amenities) ? r.amenities.join(', ') : (r.amenities || '');
+
+        // Photo select
+        const photoSelect = document.getElementById('edit-room-photo');
+        if (photoSelect && r.photos && r.photos.length > 0) {
+          const primaryPhoto = r.photos[0];
+          let matched = false;
+          for (let i = 0; i < photoSelect.options.length; i++) {
+            if (photoSelect.options[i].value === primaryPhoto) {
+              photoSelect.selectedIndex = i;
+              matched = true;
+              break;
+            }
+          }
+          if (!matched && primaryPhoto) {
+            const opt = document.createElement('option');
+            opt.value = primaryPhoto;
+            opt.textContent = `Custom (${primaryPhoto})`;
+            photoSelect.appendChild(opt);
+            photoSelect.value = primaryPhoto;
+          }
+        }
+
+        if (btnDeleteRoom) btnDeleteRoom.style.display = 'inline-block';
+        roomEditorModal.classList.add('active');
+      } catch (err) {
+        alert('Could not retrieve room details.');
+      }
+    }
+
+    // Attach click listeners to all Edit buttons
+    document.querySelectorAll('.btn-edit-room').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const roomId = btn.getAttribute('data-room-id');
+        if (roomId) {
+          openRoomEditor(roomId);
+        }
+      });
+    });
 
     document.getElementById('btn-add-room').addEventListener('click', () => {
       document.getElementById('room-editor-title').textContent = 'Add New Room';
       document.getElementById('edit-room-id').value = '';
       roomEditorForm.reset();
+      document.getElementById('edit-room-status').value = 'AVAILABLE';
+      if (btnDeleteRoom) btnDeleteRoom.style.display = 'none';
       roomEditorModal.classList.add('active');
     });
 
     roomEditorClose.addEventListener('click', () => {
       roomEditorModal.classList.remove('active');
     });
+
+    // Delete Room
+    if (btnDeleteRoom) {
+      btnDeleteRoom.addEventListener('click', async () => {
+        const roomId = document.getElementById('edit-room-id').value;
+        const roomNum = document.getElementById('edit-room-number').value;
+        if (!roomId) return;
+        if (!confirm(`Are you sure you want to delete room #${roomNum}? This action cannot be undone.`)) {
+          return;
+        }
+
+        try {
+          const res = await fetch(`/api/admin/rooms/${roomId}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (data.success) {
+            alert('Room deleted successfully!');
+            window.location.reload();
+          } else {
+            alert(data.error || 'Failed to delete room.');
+          }
+        } catch (err) {
+          alert('Server connection error.');
+        }
+      });
+    }
 
     roomEditorForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -2027,6 +2277,7 @@ img {
 
       const amenitiesList = document.getElementById('edit-room-amenities').value.split(',').map(s => s.trim()).filter(Boolean);
       const chosenPhoto = document.getElementById('edit-room-photo').value;
+      const roomStatus = document.getElementById('edit-room-status').value;
 
       const payload = {
         room_number: document.getElementById('edit-room-number').value.trim(),
@@ -2038,7 +2289,7 @@ img {
         description: document.getElementById('edit-room-desc').value.trim(),
         amenities: amenitiesList,
         photos: [chosenPhoto],
-        status: 'AVAILABLE'
+        status: roomStatus
       };
 
       const url = isEdit ? `/api/admin/rooms/${roomId}` : '/api/admin/rooms';
@@ -2088,7 +2339,7 @@ img {
         });
         const data = await res.json();
         if (data.success) {
-          alertBox.textContent = 'Settings saved successfully!';
+          alertBox.textContent = 'Property settings saved successfully!';
           alertBox.style.background = '#dcfce7';
           alertBox.style.color = '#15803d';
           alertBox.style.display = 'block';
@@ -2105,6 +2356,101 @@ img {
         alertBox.style.display = 'block';
       }
     });
+
+    // Credentials Form (Username & Password Update)
+    const credForm = document.getElementById('credentials-form');
+    if (credForm) {
+      credForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const alertBox = document.getElementById('cred-alert');
+        const submitBtn = document.getElementById('btn-save-credentials');
+        alertBox.style.display = 'none';
+
+        const currentPass = document.getElementById('current-admin-password').value.trim();
+        const newUsername = document.getElementById('new-admin-username').value.trim();
+        const newPass = document.getElementById('new-admin-password').value.trim();
+        const confirmPass = document.getElementById('confirm-admin-password').value.trim();
+
+        if (!currentPass) {
+          alertBox.textContent = 'Please enter your current password.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+          return;
+        }
+
+        if (newPass && newPass.length < 6) {
+          alertBox.textContent = 'New password must be at least 6 characters long.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+          return;
+        }
+
+        if (newPass && newPass !== confirmPass) {
+          alertBox.textContent = 'New password and Confirm password do not match.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+          return;
+        }
+
+        if (!newUsername && !newPass) {
+          alertBox.textContent = 'Please provide a new username or new password to update.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Updating...';
+
+        try {
+          const res = await fetch('/api/admin/change-credentials', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              current_password: currentPass,
+              new_username: newUsername,
+              new_password: newPass,
+              confirm_password: confirmPass
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alertBox.textContent = data.message || 'Credentials updated successfully!';
+            alertBox.style.background = '#dcfce7';
+            alertBox.style.color = '#15803d';
+            alertBox.style.display = 'block';
+
+            // Clear password fields
+            document.getElementById('current-admin-password').value = '';
+            document.getElementById('new-admin-password').value = '';
+            document.getElementById('confirm-admin-password').value = '';
+
+            if (data.username) {
+              document.getElementById('curr-username-display').value = data.username;
+              const userLabel = document.getElementById('admin-logged-in-user');
+              if (userLabel) userLabel.textContent = data.username;
+            }
+          } else {
+            alertBox.textContent = data.error || 'Failed to update credentials.';
+            alertBox.style.background = '#fee2e2';
+            alertBox.style.color = '#b91c1c';
+            alertBox.style.display = 'block';
+          }
+        } catch (err) {
+          alertBox.textContent = 'Connection error. Please try again.';
+          alertBox.style.background = '#fee2e2';
+          alertBox.style.color = '#b91c1c';
+          alertBox.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'UPDATE CREDENTIALS';
+        }
+      });
+    }
 
     // --- Reviews Management ---
     async function loadReviews() {

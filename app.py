@@ -555,6 +555,48 @@ def api_admin_settings():
     return jsonify({"success": True, "message": "Settings updated successfully."})
 
 
+@app.route("/api/admin/change-credentials", methods=["POST"])
+@admin_required
+def api_admin_change_credentials():
+    data = request.get_json() or {}
+    current_password = data.get("current_password", "").strip()
+    new_username = data.get("new_username", "").strip()
+    new_password = data.get("new_password", "").strip()
+    confirm_password = data.get("confirm_password", "").strip()
+
+    if not current_password:
+        return jsonify({"error": "Please enter your current password to authorize changes."}), 400
+
+    settings = database.get_settings()
+    stored_hash = settings.get("admin_password_hash", "")
+    if database.hash_password(current_password) != stored_hash:
+        return jsonify({"error": "Current password is incorrect."}), 400
+
+    updates = {}
+    if new_username:
+        if len(new_username) < 3:
+            return jsonify({"error": "New username must be at least 3 characters long."}), 400
+        updates["admin_username"] = new_username
+        session["admin_user"] = new_username
+
+    if new_password:
+        if len(new_password) < 6:
+            return jsonify({"error": "New password must be at least 6 characters long."}), 400
+        if new_password != confirm_password:
+            return jsonify({"error": "New password and Confirm Password do not match."}), 400
+        updates["admin_password_hash"] = database.hash_password(new_password)
+
+    if not updates:
+        return jsonify({"error": "Please enter a new username or new password to update."}), 400
+
+    database.update_settings(updates)
+    return jsonify({
+        "success": True,
+        "message": "Admin credentials updated successfully! Please keep your new login details safe.",
+        "username": updates.get("admin_username", settings.get("admin_username", "admin"))
+    })
+
+
 @app.errorhandler(404)
 def handle_404(e):
     path = request.path
