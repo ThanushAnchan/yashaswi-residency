@@ -2303,7 +2303,27 @@ img {
         });
         const data = await res.json();
         if (data.success) {
-          alert(isEdit ? 'Room updated successfully!' : 'Room created successfully!');
+          // Instant real-time broadcast to open public website tabs
+          if ('BroadcastChannel' in window) {
+            try {
+              const bc = new BroadcastChannel('yashaswi_room_sync');
+              bc.postMessage({
+                type: 'ROOM_PRICE_UPDATED',
+                room_id: roomId,
+                price: payload.price_per_night,
+                timestamp: Date.now()
+              });
+            } catch (err) {}
+          }
+          try {
+            localStorage.setItem('yashaswi_room_price_update', JSON.stringify({
+              room_id: roomId,
+              price: payload.price_per_night,
+              timestamp: Date.now()
+            }));
+          } catch (err) {}
+
+          alert(isEdit ? 'Room updated successfully! Prices on public website have updated.' : 'Room created successfully!');
           window.location.reload();
         } else {
           alert(data.error || 'Failed to save room.');

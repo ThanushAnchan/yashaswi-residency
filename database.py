@@ -152,6 +152,14 @@ def get_db_connection():
                 os.makedirs(db_dir, exist_ok=True)
             except OSError:
                 pass
+        if IS_VERCEL and not os.path.exists(DB_PATH):
+            bundled_db = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "yashaswi.db")
+            if os.path.exists(bundled_db):
+                try:
+                    import shutil
+                    shutil.copyfile(bundled_db, DB_PATH)
+                except Exception:
+                    pass
         conn = sqlite3.connect(DB_PATH, timeout=25.0)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys = ON")

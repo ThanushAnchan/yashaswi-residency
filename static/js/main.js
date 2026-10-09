@@ -489,4 +489,104 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   });
+
+  // --- Live Room Price Real-Time Simultaneous Synchronization ---
+  async function syncRoomPrices() {
+    try {
+      const res = await fetch(`/api/rooms?all=1&_t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.success || !Array.isArray(data.rooms)) return;
+
+      let minPrice = Infinity;
+
+      data.rooms.forEach(r => {
+        const p = parseFloat(r.price_per_night);
+        if (!isNaN(p)) {
+          if (p < minPrice) minPrice = p;
+
+          // 1. Update room card price badge
+          const priceBadge = document.getElementById(`price-val-${r.room_id}`);
+          if (priceBadge) {
+            const formatted = `₹${Math.round(p)}`;
+            if (priceBadge.textContent.trim() !== formatted) {
+              priceBadge.textContent = formatted;
+              priceBadge.classList.add('price-flash');
+              setTimeout(() => priceBadge.classList.remove('price-flash'), 1200);
+            }
+          }
+
+          // 2. Update booking dropdown options
+          const selectOpt = document.querySelector(`#booking-room-select option[value="${r.room_id}"]`);
+          if (selectOpt) {
+            selectOpt.textContent = `${r.name} (Starting ₹${Math.round(p)}/night)`;
+          }
+
+          // 3. Update room card dataset
+          const card = document.querySelector(`.room-card[data-room-id="${r.room_id}"]`);
+          if (card) {
+            card.setAttribute('data-room-price', p);
+          }
+        }
+      });
+
+      // Update section header starting price
+      if (minPrice !== Infinity) {
+        const headerPrice = document.getElementById('header-starting-price');
+        if (headerPrice) {
+          const headerFormatted = `Starting from ₹${Math.round(minPrice)} / night`;
+          if (headerPrice.textContent.trim() !== headerFormatted) {
+            headerPrice.textContent = headerFormatted;
+            headerPrice.classList.add('price-flash');
+            setTimeout(() => headerPrice.classList.remove('price-flash'), 1200);
+          }
+        }
+
+        // Update mobile sticky price
+        const mobilePrice = document.getElementById('mobile-sticky-price');
+        if (mobilePrice) {
+          const mobFormatted = `₹${Math.round(minPrice)} / night`;
+          if (mobilePrice.textContent.trim() !== mobFormatted) {
+            mobilePrice.textContent = mobFormatted;
+            mobilePrice.classList.add('price-flash');
+            setTimeout(() => mobilePrice.classList.remove('price-flash'), 1200);
+          }
+        }
+      }
+    } catch (err) {
+      // Non-blocking background sync
+    }
+  }
+
+  // 1. Immediate sync on load
+  syncRoomPrices();
+
+  // 2. Continuous real-time polling every 5 seconds for cross-device updates
+  setInterval(syncRoomPrices, 5000);
+
+  // 3. BroadcastChannel for instant simultaneous updates across open tabs
+  if ('BroadcastChannel' in window) {
+    try {
+      const roomChannel = new BroadcastChannel('yashaswi_room_sync');
+      roomChannel.onmessage = (e) => {
+        if (e.data && e.data.type === 'ROOM_PRICE_UPDATED') {
+          syncRoomPrices();
+        }
+      };
+    } catch (e) {}
+  }
+
+  // 4. Storage event for cross-window / cross-tab synchronization
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'yashaswi_room_price_update') {
+      syncRoomPrices();
+    }
+  });
+
+  // 5. Visibility change to immediately sync when user switches back to this tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      syncRoomPrices();
+    }
+  });
 });

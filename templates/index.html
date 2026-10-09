@@ -704,6 +704,18 @@ img {
 .room-price-badge span {
   color: var(--accent);
   font-size: 1.15rem;
+  transition: all 0.3s ease;
+}
+
+.price-flash {
+  display: inline-block;
+  animation: priceFlashAnim 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes priceFlashAnim {
+  0% { transform: scale(1.28); color: #10b981; }
+  50% { transform: scale(1.12); color: #f59e0b; }
+  100% { transform: scale(1); color: var(--accent); }
 }
 
 .room-content {
@@ -1667,19 +1679,20 @@ img {
        ========================================================================== -->
   <section class="section" id="rooms" style="background: #f7f5ef;">
     <div class="container">
+      {% set min_price = rooms | map(attribute='price_per_night') | min if rooms else 2415 %}
       <div class="section-title-wrap">
         <span class="section-tag">Our Accommodations</span>
         <h2>Spacious, Serene & Comfortable Stays</h2>
         <p class="section-subtitle">
           Thoughtfully arranged rooms fitted with climate control, quality bedding, and modern amenities.
           <br>
-          <strong style="color: var(--wood);">Starting from ₹2,415 / night</strong> (Reference starting price)
+          <strong id="header-starting-price" style="color: var(--wood);">Starting from ₹{{ "%.0f"|format(min_price) }} / night</strong> (Reference starting price)
         </p>
       </div>
 
       <div class="rooms-grid">
         {% for room in rooms %}
-        <div class="room-card" data-room-id="{{ room.room_id }}">
+        <div class="room-card" data-room-id="{{ room.room_id }}" data-room-price="{{ room.price_per_night }}">
           <div class="room-image-wrap">
             {% if room.photos and room.photos|length > 0 %}
             <img src="{{ room.photos[0] }}" alt="{{ room.name }}" class="room-img">
@@ -1687,7 +1700,7 @@ img {
             <img src="/static/images/living_lounge.png" alt="{{ room.name }}" class="room-img">
             {% endif %}
             <div class="room-price-badge">
-              Starting from <span>₹{{ "%.0f"|format(room.price_per_night) }}</span> / night
+              Starting from <span class="room-card-price-value" id="price-val-{{ room.room_id }}">₹{{ "%.0f"|format(room.price_per_night) }}</span> / night
             </div>
           </div>
 
@@ -2086,7 +2099,7 @@ img {
        ========================================================================== -->
   <div class="mobile-sticky-bar">
     <div class="mobile-price-tag">
-      <strong>₹2,415 / night</strong>
+      <strong id="mobile-sticky-price">₹{{ "%.0f"|format(min_price) }} / night</strong>
       <span>Starting reference price</span>
     </div>
     <button class="btn btn-primary btn-sm btn-open-booking">Book Now</button>
@@ -2107,7 +2120,7 @@ img {
       <div class="modal-body">
         <div id="room-modal-gallery"></div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin: 1.25rem 0 0.75rem;">
-          <h4 id="room-modal-price" style="color: var(--accent); font-size: 1.4rem;">₹2,415 / night</h4>
+          <h4 id="room-modal-price" style="color: var(--accent); font-size: 1.4rem;">₹{{ "%.0f"|format(min_price) }} / night</h4>
           <span id="room-modal-capacity" style="color: var(--text-muted); font-size: 0.9rem;">2 Guests</span>
         </div>
         <p id="room-modal-desc" style="color: var(--text-main); line-height: 1.7; margin-bottom: 1.5rem;"></p>
